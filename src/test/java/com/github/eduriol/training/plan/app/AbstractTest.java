@@ -22,4 +22,9 @@ abstract class AbstractTest {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.readValue(json, clazz);
     }
+
+    protected String mapToJson(Object obj) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.writeValueAsString(obj);
+    }
 }
