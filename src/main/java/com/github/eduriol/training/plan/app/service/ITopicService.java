@@ -2,8 +2,12 @@ package com.github.eduriol.training.plan.app.service;
 
 import com.github.eduriol.training.plan.app.models.domain.Topic;
 
+import java.util.List;
+
 public interface ITopicService {
 
-    public Topic save(Topic topic);
+    Topic save(Topic topic);
+
+    List<Topic> findAll();
 
 }

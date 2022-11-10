@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api")
 public class TrainingPlanRestController {
@@ -23,6 +25,11 @@ public class TrainingPlanRestController {
     @ResponseStatus(HttpStatus.CREATED)
     public Topic createTopic(@RequestBody Topic topic) {
         return topicService.save(topic);
+    }
+
+    @GetMapping("/topics")
+    public List<Topic> getAllTopics() {
+        return topicService.findAll();
     }
 
 }
