@@ -10,4 +10,6 @@ public interface ITopicService {
 
     List<Topic> findAll();
 
+    Topic findById(Long id);
+
 }

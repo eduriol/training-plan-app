@@ -81,10 +81,38 @@ class TrainingPlanApplicationTests extends AbstractTests {
         assertEquals(2, topicList.length);
     }
 
-    private void createTestTopic(String topicName) {
+    @Test
+    public void getTopic() throws Exception {
+        Topic topic = createTestTopic("Java");
+        String uri = "/api/topics/".concat(topic.getId().toString());
+
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri)
+                .accept(MediaType.APPLICATION_JSON)).andReturn();
+
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(200, status);
+        String content = mvcResult.getResponse().getContentAsString();
+        Topic topicResponse = super.mapFromJson(content, Topic.class);
+        assertEquals(topic.getId(), topicResponse.getId());
+        assertInstanceOf(Date.class, topicResponse.getCreatedAt());
+        assertEquals("Java", topicResponse.getName());
+    }
+
+    @Test
+    public void getUnknownTopic() throws Exception {
+        String uri = "/api/topics/0";
+
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri)
+                .accept(MediaType.APPLICATION_JSON)).andReturn();
+
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(404, status);
+    }
+
+    private Topic createTestTopic(String topicName) {
         Topic topic = new Topic();
         topic.setName(topicName);
-        topicDao.save(topic);
+        return topicDao.save(topic);
     }
 
 }

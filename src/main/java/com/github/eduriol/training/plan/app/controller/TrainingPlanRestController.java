@@ -1,5 +1,6 @@
 package com.github.eduriol.training.plan.app.controller;
 
+import com.github.eduriol.training.plan.app.exception.NotFoundException;
 import com.github.eduriol.training.plan.app.models.HealthStatus;
 import com.github.eduriol.training.plan.app.models.domain.Topic;
 import com.github.eduriol.training.plan.app.service.ITopicService;
@@ -30,6 +31,18 @@ public class TrainingPlanRestController {
     @GetMapping("/topics")
     public List<Topic> getAllTopics() {
         return topicService.findAll();
+    }
+
+    @GetMapping("/topics/{id}")
+    public Topic getTopic(@PathVariable Long id) {
+        Topic topic = topicService.findById(id);
+
+        if (topic == null) {
+            throw new NotFoundException("The topic with id = ".concat(id.toString()).concat(" does not exist."));
+        }
+
+        return topic;
+
     }
 
 }

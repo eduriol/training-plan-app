@@ -25,4 +25,10 @@ public class TopicServiceImpl implements ITopicService {
     public List<Topic> findAll() {
         return (List<Topic>) topicDao.findAll();
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Topic findById(Long id) {
+        return topicDao.findById(id).orElse(null);
+    }
 }
