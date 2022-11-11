@@ -1,5 +1,6 @@
 package com.github.eduriol.training.plan.app.controller;
 
+import com.github.eduriol.training.plan.app.exception.NoContentException;
 import com.github.eduriol.training.plan.app.exception.NotFoundException;
 import com.github.eduriol.training.plan.app.models.HealthStatus;
 import com.github.eduriol.training.plan.app.models.domain.Topic;
@@ -30,7 +31,13 @@ public class TrainingPlanRestController {
 
     @GetMapping("/topics")
     public List<Topic> getAllTopics() {
-        return topicService.findAll();
+        List<Topic> topicsList = topicService.findAll();
+
+        if (topicsList.isEmpty()) {
+            throw new NoContentException("The list of topics is empty.");
+        }
+
+        return topicsList;
     }
 
     @GetMapping("/topics/{id}")

@@ -82,6 +82,17 @@ class TrainingPlanApplicationTests extends AbstractTests {
     }
 
     @Test
+    public void getEmptyTopicsList() throws Exception {
+        String uri = "/api/topics";
+
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri)
+                .accept(MediaType.APPLICATION_JSON)).andReturn();
+
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(204, status);
+    }
+
+    @Test
     public void getTopic() throws Exception {
         Topic topic = createTestTopic("Java");
         String uri = "/api/topics/".concat(topic.getId().toString());

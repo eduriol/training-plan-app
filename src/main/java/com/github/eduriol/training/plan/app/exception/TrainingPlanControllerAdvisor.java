@@ -18,4 +18,12 @@ public class TrainingPlanControllerAdvisor extends ResponseEntityExceptionHandle
                 new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }
 
+    @ExceptionHandler(NoContentException.class)
+    public ResponseEntity<Object> handleNoContentException(NoContentException ex, WebRequest request) {
+        String bodyOfResponse = ex.getMessage();
+        return handleExceptionInternal(ex, bodyOfResponse,
+                new HttpHeaders(), HttpStatus.NO_CONTENT, request);
+    }
+
+
 }
