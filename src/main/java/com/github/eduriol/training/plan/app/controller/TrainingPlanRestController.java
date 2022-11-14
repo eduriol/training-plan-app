@@ -52,4 +52,19 @@ public class TrainingPlanRestController {
 
     }
 
+    @PutMapping("/topics/{id}")
+    public Topic updateTopic(@PathVariable Long id, @RequestBody Topic updatedTopic) {
+        Topic topic = topicService.findById(id);
+
+        if (topic == null) {
+            throw new NotFoundException("The topic with id = ".concat(id.toString()).concat(" does not exist."));
+        }
+
+        topic.setName(updatedTopic.getName());
+        topicService.save(topic);
+
+        return topic;
+
+    }
+
 }

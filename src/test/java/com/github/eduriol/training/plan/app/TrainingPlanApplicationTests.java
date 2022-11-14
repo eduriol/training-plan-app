@@ -120,6 +120,56 @@ class TrainingPlanApplicationTests extends AbstractTests {
         assertEquals(404, status);
     }
 
+    @Test
+    public void updateTopic() throws Exception {
+        Topic topic = createTestTopic("Java");
+        String uri = "/api/topics/".concat(topic.getId().toString());
+        Topic updatedTopic = new Topic();
+        updatedTopic.setName("Kubernetes");
+        String body = super.mapToJson(updatedTopic);
+
+        MvcResult mvcPutResult = mvc.perform(MockMvcRequestBuilders.put(uri)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body)
+                .accept(MediaType.APPLICATION_JSON)).andReturn();
+
+        int putResponseStatus = mvcPutResult.getResponse().getStatus();
+        assertEquals(200, putResponseStatus);
+        String putContent = mvcPutResult.getResponse().getContentAsString();
+        Topic putTopicResponse = super.mapFromJson(putContent, Topic.class);
+        assertEquals(topic.getId(), putTopicResponse.getId());
+        assertEquals(topic.getCreatedAt(), putTopicResponse.getCreatedAt());
+        assertEquals("Kubernetes", putTopicResponse.getName());
+
+        MvcResult mvcGetResult = mvc.perform(MockMvcRequestBuilders.get(uri)
+                .accept(MediaType.APPLICATION_JSON)).andReturn();
+
+        int getResponseStatus = mvcGetResult.getResponse().getStatus();
+        assertEquals(200, getResponseStatus);
+        String getContent = mvcGetResult.getResponse().getContentAsString();
+        Topic getTopicResponse = super.mapFromJson(getContent, Topic.class);
+        assertEquals(topic.getId(), getTopicResponse.getId());
+        assertEquals(topic.getCreatedAt(), getTopicResponse.getCreatedAt());
+        assertEquals("Kubernetes", getTopicResponse.getName());
+
+    }
+
+    @Test
+    public void updateUnknownTopic() throws Exception {
+        String uri = "/api/topics/0";
+        Topic updatedTopic = new Topic();
+        updatedTopic.setName("Kubernetes");
+        String body = super.mapToJson(updatedTopic);
+
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.put(uri)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body)
+                .accept(MediaType.APPLICATION_JSON)).andReturn();
+
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(404, status);
+    }
+
     private Topic createTestTopic(String topicName) {
         Topic topic = new Topic();
         topic.setName(topicName);
