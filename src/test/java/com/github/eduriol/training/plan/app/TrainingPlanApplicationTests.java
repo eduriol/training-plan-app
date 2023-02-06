@@ -25,7 +25,7 @@ class TrainingPlanApplicationTests extends AbstractTests {
         super.setUp();
     }
 
-    @AfterEach
+    @BeforeEach
     public void resetDb() {
         topicDao.deleteAll();
     }
