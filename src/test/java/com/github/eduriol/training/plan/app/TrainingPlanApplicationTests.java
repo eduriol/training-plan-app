@@ -1,17 +1,17 @@
 package com.github.eduriol.training.plan.app;
 
 import com.github.eduriol.training.plan.app.dao.ITopicDao;
-import com.github.eduriol.training.plan.app.models.HealthStatus;
 import com.github.eduriol.training.plan.app.models.domain.Topic;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.util.Date;
+import java.time.temporal.ChronoUnit;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.hamcrest.Matchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TrainingPlanApplicationTests extends AbstractTests {
@@ -34,14 +34,12 @@ class TrainingPlanApplicationTests extends AbstractTests {
     void getAppHealthStatus() throws Exception {
         String uri = "/api/health";
 
-        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri)
-                .accept(MediaType.APPLICATION_JSON)).andReturn();
-
-        int status = mvcResult.getResponse().getStatus();
-        assertEquals(200, status);
-        String content = mvcResult.getResponse().getContentAsString();
-        HealthStatus healthStatus = super.mapFromJson(content, HealthStatus.class);
-        assertTrue(healthStatus.isHealthy());
+        mvc.perform(get(uri))
+                .andExpectAll(
+                        status().isOk(),
+                        content().contentType(MediaType.APPLICATION_JSON),
+                        jsonPath("$.healthy").value(true)
+                );
     }
 
     @Test
@@ -51,18 +49,15 @@ class TrainingPlanApplicationTests extends AbstractTests {
         topic.setName("Java");
         String body = super.mapToJson(topic);
 
-        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.post(uri)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(body)
-                .accept(MediaType.APPLICATION_JSON)).andReturn();
-
-        int status = mvcResult.getResponse().getStatus();
-        assertEquals(201, status);
-        String content = mvcResult.getResponse().getContentAsString();
-        Topic topicResponse = super.mapFromJson(content, Topic.class);
-        assertInstanceOf(Long.class, topicResponse.getId());
-        assertInstanceOf(Date.class, topicResponse.getCreatedAt());
-        assertEquals(topic.getName(), topicResponse.getName());
+        mvc.perform(MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpectAll(
+                        status().isCreated(),
+                        content().contentType(MediaType.APPLICATION_JSON),
+                        jsonPath("$.id").isNumber(),
+                        jsonPath("$.createdAt").value(matchesPattern(zonedDateTimeRegex)),
+                        jsonPath("$.name").value(topic.getName())
+                );
     }
 
     @Test
@@ -71,25 +66,18 @@ class TrainingPlanApplicationTests extends AbstractTests {
         createTestTopic("Java");
         createTestTopic("Kubernetes");
 
-        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri)
-                .accept(MediaType.APPLICATION_JSON)).andReturn();
-
-        int status = mvcResult.getResponse().getStatus();
-        assertEquals(200, status);
-        String content = mvcResult.getResponse().getContentAsString();
-        Topic[] topicList = super.mapFromJson(content, Topic[].class);
-        assertEquals(2, topicList.length);
+        mvc.perform(get(uri))
+                .andExpectAll(
+                        status().isOk(),
+                        content().contentType(MediaType.APPLICATION_JSON),
+                        jsonPath("$").value(iterableWithSize(2))
+                );
     }
 
     @Test
     public void getEmptyTopicsList() throws Exception {
         String uri = "/api/topics";
-
-        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri)
-                .accept(MediaType.APPLICATION_JSON)).andReturn();
-
-        int status = mvcResult.getResponse().getStatus();
-        assertEquals(204, status);
+        mvc.perform(get(uri)).andExpect(status().isNoContent());
     }
 
     @Test
@@ -97,27 +85,20 @@ class TrainingPlanApplicationTests extends AbstractTests {
         Topic topic = createTestTopic("Java");
         String uri = "/api/topics/".concat(topic.getId().toString());
 
-        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri)
-                .accept(MediaType.APPLICATION_JSON)).andReturn();
-
-        int status = mvcResult.getResponse().getStatus();
-        assertEquals(200, status);
-        String content = mvcResult.getResponse().getContentAsString();
-        Topic topicResponse = super.mapFromJson(content, Topic.class);
-        assertEquals(topic.getId(), topicResponse.getId());
-        assertInstanceOf(Date.class, topicResponse.getCreatedAt());
-        assertEquals("Java", topicResponse.getName());
+        mvc.perform(get(uri))
+                .andExpectAll(
+                        status().isOk(),
+                        content().contentType(MediaType.APPLICATION_JSON),
+                        jsonPath("$.id").value(topic.getId()),
+                        jsonPath("$.createdAt").value(matchesPattern(zonedDateTimeRegex)),
+                        jsonPath("$.name").value("Java")
+                );
     }
 
     @Test
     public void getUnknownTopic() throws Exception {
         String uri = "/api/topics/0";
-
-        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri)
-                .accept(MediaType.APPLICATION_JSON)).andReturn();
-
-        int status = mvcResult.getResponse().getStatus();
-        assertEquals(404, status);
+        mvc.perform(get(uri)).andExpect(status().isNotFound());
     }
 
     @Test
@@ -128,30 +109,14 @@ class TrainingPlanApplicationTests extends AbstractTests {
         updatedTopic.setName("Kubernetes");
         String body = super.mapToJson(updatedTopic);
 
-        MvcResult mvcPutResult = mvc.perform(MockMvcRequestBuilders.put(uri)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(body)
-                .accept(MediaType.APPLICATION_JSON)).andReturn();
-
-        int putResponseStatus = mvcPutResult.getResponse().getStatus();
-        assertEquals(200, putResponseStatus);
-        String putContent = mvcPutResult.getResponse().getContentAsString();
-        Topic putTopicResponse = super.mapFromJson(putContent, Topic.class);
-        assertEquals(topic.getId(), putTopicResponse.getId());
-        assertEquals(topic.getCreatedAt(), putTopicResponse.getCreatedAt());
-        assertEquals("Kubernetes", putTopicResponse.getName());
-
-        MvcResult mvcGetResult = mvc.perform(MockMvcRequestBuilders.get(uri)
-                .accept(MediaType.APPLICATION_JSON)).andReturn();
-
-        int getResponseStatus = mvcGetResult.getResponse().getStatus();
-        assertEquals(200, getResponseStatus);
-        String getContent = mvcGetResult.getResponse().getContentAsString();
-        Topic getTopicResponse = super.mapFromJson(getContent, Topic.class);
-        assertEquals(topic.getId(), getTopicResponse.getId());
-        assertEquals(topic.getCreatedAt(), getTopicResponse.getCreatedAt());
-        assertEquals("Kubernetes", getTopicResponse.getName());
-
+        mvc.perform(MockMvcRequestBuilders.put(uri)
+                .contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpectAll(
+                        status().isOk(),
+                        jsonPath("$.id").value(topic.getId()),
+                        jsonPath("$.createdAt", new ZonedDateTimeMatcher(topic.getCreatedAt(), 1, ChronoUnit.MILLIS)),
+                        jsonPath("$.name").value("Kubernetes")
+                );
     }
 
     @Test
@@ -161,13 +126,9 @@ class TrainingPlanApplicationTests extends AbstractTests {
         updatedTopic.setName("Kubernetes");
         String body = super.mapToJson(updatedTopic);
 
-        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.put(uri)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(body)
-                .accept(MediaType.APPLICATION_JSON)).andReturn();
-
-        int status = mvcResult.getResponse().getStatus();
-        assertEquals(404, status);
+        mvc.perform(MockMvcRequestBuilders.put(uri)
+                        .contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isNotFound());
     }
 
     private Topic createTestTopic(String topicName) {

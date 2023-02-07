@@ -3,7 +3,7 @@ package com.github.eduriol.training.plan.app.models.domain;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.ZonedDateTime;
 
 @Entity
 @Table(name="topics")
@@ -16,11 +16,11 @@ public class Topic {
     private String name;
 
     @Column(name = "created_at")
-    private Date createdAt;
+    private ZonedDateTime createdAt;
 
     @PrePersist
     public void prePersist() {
-        this.createdAt = new Date();
+        this.createdAt = ZonedDateTime.now();
     }
 
 }

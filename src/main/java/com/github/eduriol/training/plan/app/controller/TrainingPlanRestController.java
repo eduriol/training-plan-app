@@ -61,9 +61,7 @@ public class TrainingPlanRestController {
         }
 
         topic.setName(updatedTopic.getName());
-        topicService.save(topic);
-
-        return topic;
+        return topicService.save(topic);
 
     }
 
