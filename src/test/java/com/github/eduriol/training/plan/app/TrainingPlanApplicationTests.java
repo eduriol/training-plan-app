@@ -61,6 +61,18 @@ class TrainingPlanApplicationTests extends AbstractTests {
     }
 
     @Test
+    void createTopicWithoutName() throws Exception {
+        String uri = "/api/topics";
+        Topic topic = new Topic();
+        String body = super.mapToJson(topic);
+
+        mvc.perform(MockMvcRequestBuilders.post(uri)
+                        .contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isBadRequest());
+    }
+
+
+    @Test
     public void getTopicsList() throws Exception {
         String uri = "/api/topics";
         createTestTopic("Java");
@@ -129,6 +141,18 @@ class TrainingPlanApplicationTests extends AbstractTests {
         mvc.perform(MockMvcRequestBuilders.put(uri)
                         .contentType(MediaType.APPLICATION_JSON).content(body))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void updateTopicWithoutName() throws Exception {
+        Topic topic = createTestTopic("Java");
+        String uri = "/api/topics/".concat(topic.getId().toString());
+        Topic updatedTopic = new Topic();
+        String body = super.mapToJson(updatedTopic);
+
+        mvc.perform(MockMvcRequestBuilders.put(uri)
+                        .contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isBadRequest());
     }
 
     private Topic createTestTopic(String topicName) {

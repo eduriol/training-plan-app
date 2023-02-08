@@ -25,5 +25,11 @@ public class TrainingPlanControllerAdvisor extends ResponseEntityExceptionHandle
                 new HttpHeaders(), HttpStatus.NO_CONTENT, request);
     }
 
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<Object> handleBadRequestException(BadRequestException ex, WebRequest request) {
+        String bodyOfResponse = ex.getMessage();
+        return handleExceptionInternal(ex, bodyOfResponse,
+                new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+    }
 
 }
