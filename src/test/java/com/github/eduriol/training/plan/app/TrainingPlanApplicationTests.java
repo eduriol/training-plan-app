@@ -95,7 +95,7 @@ class TrainingPlanApplicationTests extends AbstractTests {
     @Test
     public void getTopic() throws Exception {
         Topic topic = createTestTopic("Java");
-        String uri = "/api/topics/".concat(topic.getId().toString());
+        String uri = "/api/topics/" + topic.getId();
 
         mvc.perform(get(uri))
                 .andExpectAll(
@@ -116,7 +116,7 @@ class TrainingPlanApplicationTests extends AbstractTests {
     @Test
     public void updateTopic() throws Exception {
         Topic topic = createTestTopic("Java");
-        String uri = "/api/topics/".concat(topic.getId().toString());
+        String uri = "/api/topics/" + topic.getId();
         Topic updatedTopic = new Topic();
         updatedTopic.setName("Kubernetes");
         String body = super.mapToJson(updatedTopic);
@@ -146,7 +146,7 @@ class TrainingPlanApplicationTests extends AbstractTests {
     @Test
     public void updateTopicWithoutName() throws Exception {
         Topic topic = createTestTopic("Java");
-        String uri = "/api/topics/".concat(topic.getId().toString());
+        String uri = "/api/topics/" + topic.getId();
         Topic updatedTopic = new Topic();
         String body = super.mapToJson(updatedTopic);
 

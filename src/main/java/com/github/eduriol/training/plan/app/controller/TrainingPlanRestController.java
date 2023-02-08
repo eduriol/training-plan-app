@@ -58,7 +58,7 @@ public class TrainingPlanRestController {
         Topic topic = topicService.findById(id);
 
         if (topic == null) {
-            throw new NotFoundException("The topic with id = ".concat(id.toString()).concat(" does not exist."));
+            throw new NotFoundException("The topic with id = " + id.toString() + " does not exist.");
         }
 
         return topic;
@@ -70,7 +70,7 @@ public class TrainingPlanRestController {
         Topic topic = topicService.findById(id);
 
         if (topic == null) {
-            throw new NotFoundException("The topic with id = ".concat(id.toString()).concat(" does not exist."));
+            throw new NotFoundException("The topic with id = " + id.toString() + " does not exist.");
         }
 
         if (result.hasErrors()) {
