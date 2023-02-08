@@ -11,25 +11,21 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class TrainingPlanControllerAdvisor extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<Object> handleNotFoundException(NotFoundException ex, WebRequest request) {
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<Object> handleApplicationException(RuntimeException ex, WebRequest request) {
         String bodyOfResponse = ex.getMessage();
+        HttpStatus responseStatus;
+        if (ex instanceof NotFoundException) {
+            responseStatus = HttpStatus.NOT_FOUND;
+        } else if (ex instanceof NoContentException) {
+            responseStatus = HttpStatus.NO_CONTENT;
+        } else if (ex instanceof BadRequestException) {
+            responseStatus = HttpStatus.BAD_REQUEST;
+        } else {
+            throw new IllegalArgumentException("The Exception type " + ex.getClass() + " is not supported.");
+        }
         return handleExceptionInternal(ex, bodyOfResponse,
-                new HttpHeaders(), HttpStatus.NOT_FOUND, request);
-    }
-
-    @ExceptionHandler(NoContentException.class)
-    public ResponseEntity<Object> handleNoContentException(NoContentException ex, WebRequest request) {
-        String bodyOfResponse = ex.getMessage();
-        return handleExceptionInternal(ex, bodyOfResponse,
-                new HttpHeaders(), HttpStatus.NO_CONTENT, request);
-    }
-
-    @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<Object> handleBadRequestException(BadRequestException ex, WebRequest request) {
-        String bodyOfResponse = ex.getMessage();
-        return handleExceptionInternal(ex, bodyOfResponse,
-                new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+                new HttpHeaders(), responseStatus, request);
     }
 
 }
