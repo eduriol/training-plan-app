@@ -12,4 +12,5 @@ public interface ITopicService {
 
     Topic findById(Long id);
 
+    void delete(Long id);
 }

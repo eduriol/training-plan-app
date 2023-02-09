@@ -6,6 +6,8 @@ import com.github.eduriol.training.plan.app.models.HealthStatus;
 import com.github.eduriol.training.plan.app.models.domain.Topic;
 import com.github.eduriol.training.plan.app.service.ITopicService;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -77,6 +79,16 @@ public class TrainingPlanRestController {
         topic.setName(updatedTopic.getName());
         return topicService.save(topic);
 
+    }
+
+    @DeleteMapping("/topics/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteTopic(@PathVariable Long id) {
+        try {
+            topicService.delete(id);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new NotFoundException(List.of("The topic with id = " + id.toString() + " does not exist."));
+        }
     }
 
 }

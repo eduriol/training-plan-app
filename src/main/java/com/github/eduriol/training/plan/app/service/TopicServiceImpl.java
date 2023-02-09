@@ -31,4 +31,10 @@ public class TopicServiceImpl implements ITopicService {
     public Topic findById(Long id) {
         return topicDao.findById(id).orElse(null);
     }
+
+    @Override
+    @Transactional
+    public void delete(Long id) {
+        topicDao.deleteById(id);
+    }
 }

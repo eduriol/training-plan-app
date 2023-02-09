@@ -175,6 +175,28 @@ class TrainingPlanApplicationTests extends AbstractTests {
                 );
     }
 
+    @Test
+    public void deleteTopic() throws Exception {
+        Topic topic = createTestTopic("Java");
+        String uri = "/api/topics/" + topic.getId();
+
+        mvc.perform(delete(uri)).andExpect(status().isNoContent());
+
+        mvc.perform(get(uri)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void deleteUnknownTopic() throws Exception {
+        String uri = "/api/topics/0";
+
+        mvc.perform(delete(uri))
+                .andExpectAll(
+                        status().isNotFound(),
+                        content().contentType(MediaType.APPLICATION_JSON),
+                        jsonPath("$.errors").value(iterableWithSize(1))
+                );
+    }
+
     private Topic createTestTopic(String topicName) {
         Topic topic = new Topic();
         topic.setName(topicName);
