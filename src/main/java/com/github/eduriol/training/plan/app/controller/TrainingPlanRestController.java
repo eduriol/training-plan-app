@@ -1,6 +1,5 @@
 package com.github.eduriol.training.plan.app.controller;
 
-import com.github.eduriol.training.plan.app.exception.NoContentException;
 import com.github.eduriol.training.plan.app.exception.NotFoundException;
 import com.github.eduriol.training.plan.app.exception.BadRequestException;
 import com.github.eduriol.training.plan.app.models.HealthStatus;
@@ -13,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -35,7 +35,7 @@ public class TrainingPlanRestController {
                     .stream()
                     .map(err -> "'" + err.getField() + "' " + err.getDefaultMessage())
                     .toList();
-            throw new BadRequestException(String.join(", ", errors));
+            throw new BadRequestException(errors);
         }
 
         return topicService.save(topic);
@@ -43,13 +43,7 @@ public class TrainingPlanRestController {
 
     @GetMapping("/topics")
     public List<Topic> getAllTopics() {
-        List<Topic> topicsList = topicService.findAll();
-
-        if (topicsList.isEmpty()) {
-            throw new NoContentException("The list of topics is empty.");
-        }
-
-        return topicsList;
+        return topicService.findAll();
     }
 
     @GetMapping("/topics/{id}")
@@ -57,7 +51,7 @@ public class TrainingPlanRestController {
         Topic topic = topicService.findById(id);
 
         if (topic == null) {
-            throw new NotFoundException("The topic with id = " + id.toString() + " does not exist.");
+            throw new NotFoundException(List.of("The topic with id = " + id.toString() + " does not exist."));
         }
 
         return topic;
@@ -69,7 +63,7 @@ public class TrainingPlanRestController {
         Topic topic = topicService.findById(id);
 
         if (topic == null) {
-            throw new NotFoundException("The topic with id = " + id.toString() + " does not exist.");
+            throw new NotFoundException(List.of("The topic with id = " + id.toString() + " does not exist."));
         }
 
         if (result.hasErrors()) {
@@ -77,7 +71,7 @@ public class TrainingPlanRestController {
                     .stream()
                     .map(err -> "'" + err.getField() + "' " + err.getDefaultMessage())
                     .toList();
-            throw new BadRequestException(String.join(", ", errors));
+            throw new BadRequestException(errors);
         }
 
         topic.setName(updatedTopic.getName());

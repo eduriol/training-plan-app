@@ -1,9 +1,11 @@
 package com.github.eduriol.training.plan.app.exception;
 
-public class BadRequestException extends RuntimeException {
+import java.util.List;
 
-    public BadRequestException(String errorMessage) {
-        super(errorMessage);
+public class BadRequestException extends ApplicationException {
+
+    public BadRequestException(List<String> errors) {
+        super(errors);
     }
 
 }

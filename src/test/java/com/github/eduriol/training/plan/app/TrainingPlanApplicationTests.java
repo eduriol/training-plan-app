@@ -5,7 +5,6 @@ import com.github.eduriol.training.plan.app.models.domain.Topic;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.temporal.ChronoUnit;
 
@@ -49,7 +48,7 @@ class TrainingPlanApplicationTests extends AbstractTests {
         topic.setName("Java");
         String body = super.mapToJson(topic);
 
-        mvc.perform(MockMvcRequestBuilders.post(uri)
+        mvc.perform(post(uri)
                         .contentType(MediaType.APPLICATION_JSON).content(body))
                 .andExpectAll(
                         status().isCreated(),
@@ -66,11 +65,14 @@ class TrainingPlanApplicationTests extends AbstractTests {
         Topic topic = new Topic();
         String body = super.mapToJson(topic);
 
-        mvc.perform(MockMvcRequestBuilders.post(uri)
+        mvc.perform(post(uri)
                         .contentType(MediaType.APPLICATION_JSON).content(body))
-                .andExpect(status().isBadRequest());
+                .andExpectAll(
+                        status().isBadRequest(),
+                        content().contentType(MediaType.APPLICATION_JSON),
+                        jsonPath("$.errors").value(iterableWithSize(1))
+                );
     }
-
 
     @Test
     public void getTopicsList() throws Exception {
@@ -89,7 +91,12 @@ class TrainingPlanApplicationTests extends AbstractTests {
     @Test
     public void getEmptyTopicsList() throws Exception {
         String uri = "/api/topics";
-        mvc.perform(get(uri)).andExpect(status().isNoContent());
+        mvc.perform(get(uri))
+                .andExpectAll(
+                        status().isOk(),
+                        content().contentType(MediaType.APPLICATION_JSON),
+                        jsonPath("$").value(iterableWithSize(0))
+                );
     }
 
     @Test
@@ -110,7 +117,12 @@ class TrainingPlanApplicationTests extends AbstractTests {
     @Test
     public void getUnknownTopic() throws Exception {
         String uri = "/api/topics/0";
-        mvc.perform(get(uri)).andExpect(status().isNotFound());
+        mvc.perform(get(uri))
+                .andExpectAll(
+                        status().isNotFound(),
+                        content().contentType(MediaType.APPLICATION_JSON),
+                        jsonPath("$.errors").value(iterableWithSize(1))
+                );
     }
 
     @Test
@@ -121,7 +133,7 @@ class TrainingPlanApplicationTests extends AbstractTests {
         updatedTopic.setName("Kubernetes");
         String body = super.mapToJson(updatedTopic);
 
-        mvc.perform(MockMvcRequestBuilders.put(uri)
+        mvc.perform(put(uri)
                 .contentType(MediaType.APPLICATION_JSON).content(body))
                 .andExpectAll(
                         status().isOk(),
@@ -138,9 +150,13 @@ class TrainingPlanApplicationTests extends AbstractTests {
         updatedTopic.setName("Kubernetes");
         String body = super.mapToJson(updatedTopic);
 
-        mvc.perform(MockMvcRequestBuilders.put(uri)
-                        .contentType(MediaType.APPLICATION_JSON).content(body))
-                .andExpect(status().isNotFound());
+        mvc.perform(put(uri)
+                .contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpectAll(
+                        status().isNotFound(),
+                        content().contentType(MediaType.APPLICATION_JSON),
+                        jsonPath("$.errors").value(iterableWithSize(1))
+                );
     }
 
     @Test
@@ -150,9 +166,13 @@ class TrainingPlanApplicationTests extends AbstractTests {
         Topic updatedTopic = new Topic();
         String body = super.mapToJson(updatedTopic);
 
-        mvc.perform(MockMvcRequestBuilders.put(uri)
+        mvc.perform(put(uri)
                         .contentType(MediaType.APPLICATION_JSON).content(body))
-                .andExpect(status().isBadRequest());
+                .andExpectAll(
+                        status().isBadRequest(),
+                        content().contentType(MediaType.APPLICATION_JSON),
+                        jsonPath("$.errors").value(iterableWithSize(1))
+                );
     }
 
     private Topic createTestTopic(String topicName) {
