@@ -45,7 +45,6 @@ public class TrainingPlanRestController {
                     .stream()
                     .map(err -> "'" + err.getField() + "' " + err.getDefaultMessage())
                     .toList();
-            logger.warn("Bad request exception: {}", errors);
             throw new BadRequestException(errors);
         }
 
@@ -71,7 +70,6 @@ public class TrainingPlanRestController {
         Topic topic = topicService.findById(id);
 
         if (topic == null) {
-            logger.warn("Not found exception for topic with id = {}", id);
             throw new NotFoundException(List.of("The topic with id = " + id.toString() + " does not exist."));
         }
 
@@ -89,7 +87,6 @@ public class TrainingPlanRestController {
         Topic topic = topicService.findById(id);
 
         if (topic == null) {
-            logger.warn("Not found exception for topic with id = {}", id);
             throw new NotFoundException(List.of("The topic with id = " + id.toString() + " does not exist."));
         }
 
@@ -98,7 +95,6 @@ public class TrainingPlanRestController {
                     .stream()
                     .map(err -> "'" + err.getField() + "' " + err.getDefaultMessage())
                     .toList();
-            logger.warn("Bad request exception: {}", errors);
             throw new BadRequestException(errors);
         }
 
@@ -119,7 +115,6 @@ public class TrainingPlanRestController {
         try {
             topicService.delete(id);
         } catch (EmptyResultDataAccessException ex) {
-            logger.warn("Not found exception for topic with id = {}", id);
             throw new NotFoundException(List.of("The topic with id = " + id.toString() + " does not exist."));
         }
 

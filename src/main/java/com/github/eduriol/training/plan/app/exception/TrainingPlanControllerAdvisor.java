@@ -21,10 +21,13 @@ public class TrainingPlanControllerAdvisor extends ResponseEntityExceptionHandle
         bodyOfResponse.put("errors", ex.getErrors());
         HttpStatus responseStatus;
         if (ex instanceof NotFoundException) {
+            logger.warn("Not found exception", ex);
             responseStatus = HttpStatus.NOT_FOUND;
         } else if (ex instanceof BadRequestException) {
+            logger.warn("Bad request exception", ex);
             responseStatus = HttpStatus.BAD_REQUEST;
         } else {
+            logger.error("Illegal argument exception", ex);
             throw new IllegalArgumentException("The Exception type " + ex.getClass() + " is not supported.");
         }
         return handleExceptionInternal(ex, bodyOfResponse,
