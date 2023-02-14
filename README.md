@@ -1,5 +1,5 @@
 # Training Plan REST API
-A RESTful API built for learning purposes using the Springboot framework and Java 17, designed to provide a convenient and efficient way to create training plans and access their data. This API serves as a bridge between the client and the server, allowing client applications to easily retrieve, create, update, and delete resources without having to interact directly with the server's database.
+A RESTful API built for fun and learning purposes using the Springboot framework and Java 17, designed to provide a convenient and efficient way to create training plans and access their data. This API serves as a bridge between the client and the server, allowing client applications to easily retrieve, create, update, and delete resources without having to interact directly with the server's database.
 
 ## Getting Started
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
@@ -66,10 +66,22 @@ Or import into Postman the collection contained in the __Training_Plan_App.postm
 
 ## Endpoints
 The API has the following endpoints:
+- Health:
 
 | Method | Endpoint    | Description                                   |
 | ------ |-------------|-----------------------------------------------|
 | GET | /api/health | Retrieve the health status of the application |
+
+- Plans:
+
+| Method | Endpoint   | Description                                    |
+| ------ |------------|------------------------------------------------|
+| POST | /api/plans | Create a new training plan                     |
+
+- Topics:
+
+| Method | Endpoint    | Description                                   |
+| ------ |-------------|-----------------------------------------------|
 | GET | /api/topics/{id} | Retrieve a specific learning topic by ID      |
 | GET | /api/topics | Retrieve a list of learning topics            |
 | POST | /api/topics | Create a new learning topic                   |
