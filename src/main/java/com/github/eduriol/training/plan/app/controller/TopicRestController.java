@@ -2,7 +2,6 @@ package com.github.eduriol.training.plan.app.controller;
 
 import com.github.eduriol.training.plan.app.exception.NotFoundException;
 import com.github.eduriol.training.plan.app.exception.BadRequestException;
-import com.github.eduriol.training.plan.app.models.HealthStatus;
 import com.github.eduriol.training.plan.app.models.domain.Topic;
 import com.github.eduriol.training.plan.app.service.ITopicService;
 import org.slf4j.Logger;
@@ -18,23 +17,15 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
-public class TrainingPlanRestController {
+@RequestMapping("/api/topics")
+public class TopicRestController {
 
-    private static final Logger logger = LoggerFactory.getLogger(TrainingPlanRestController.class);
+    private static final Logger logger = LoggerFactory.getLogger(TopicRestController.class);
 
     @Autowired
     private ITopicService topicService;
 
-    @GetMapping("/health")
-    public HealthStatus health() {
-        logger.info("Received health check request");
-        HealthStatus healthStatus = new HealthStatus();
-        logger.info("Health check completed, all components are healthy");
-        return healthStatus;
-    }
-
-    @PostMapping("/topics")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Topic createTopic(@Valid @RequestBody Topic topic, BindingResult result) {
 
@@ -54,7 +45,7 @@ public class TrainingPlanRestController {
         return createdTopic;
     }
 
-    @GetMapping("/topics")
+    @GetMapping
     public List<Topic> getAllTopics() {
         logger.info("Received request to list all topics");
         List<Topic> topics = topicService.findAll();
@@ -62,7 +53,7 @@ public class TrainingPlanRestController {
         return topics;
     }
 
-    @GetMapping("/topics/{id}")
+    @GetMapping("/{id}")
     public Topic getTopic(@PathVariable Long id) {
 
         logger.info("Received request to get topic with id = {}", id);
@@ -79,7 +70,7 @@ public class TrainingPlanRestController {
 
     }
 
-    @PutMapping("/topics/{id}")
+    @PutMapping("/{id}")
     public Topic updateTopic(@PathVariable Long id, @Valid @RequestBody Topic newTopic, BindingResult result) {
 
         logger.info("Received request to update topic with id = {} with topic: {}", id, newTopic);
@@ -106,7 +97,7 @@ public class TrainingPlanRestController {
 
     }
 
-    @DeleteMapping("/topics/{id}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTopic(@PathVariable Long id) {
 

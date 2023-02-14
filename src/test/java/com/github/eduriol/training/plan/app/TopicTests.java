@@ -13,7 +13,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class TrainingPlanApplicationTests extends AbstractTests {
+class TopicTests extends AbstractTests {
 
     @Autowired
     private ITopicDao topicDao;
@@ -27,18 +27,6 @@ class TrainingPlanApplicationTests extends AbstractTests {
     @BeforeEach
     public void resetDb() {
         topicDao.deleteAll();
-    }
-
-    @Test
-    void getAppHealthStatus() throws Exception {
-        String uri = "/api/health";
-
-        mvc.perform(get(uri))
-                .andExpectAll(
-                        status().isOk(),
-                        content().contentType(MediaType.APPLICATION_JSON),
-                        jsonPath("$.healthy").value(true)
-                );
     }
 
     @Test
