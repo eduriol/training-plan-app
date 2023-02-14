@@ -8,6 +8,7 @@ These instructions will get you a copy of the project up and running on your loc
 - Java 17+
 - Springboot 2.7.5+
 - Maven 3.6.3+
+- PostgreSQL 14.6+
 - Git 2.34.1+
 
 ### Installing
@@ -19,7 +20,24 @@ Navigate to the project directory and build the project using Maven:
 ```
 $ mvn install
 ```
-### Running the application:
+
+### Database configuration
+This application uses a PostgreSQL database to persist training plan data. To configure the database connection, modify the _application.properties_ file located in the _src/main/resources_ directory. By default, the application expects a PostgreSQL server running on localhost with a database named training.
+
+You can customize the connection properties by modifying the following properties in the _application.properties_ file:
+
+- spring.datasource.url: the URL of the database server
+- spring.datasource.username: the username used to connect to the database
+- spring.datasource.password: the password used to connect to the database
+
+Here's an example configuration for connecting to a PostgreSQL database running on a remote server:
+```
+spring.datasource.url=jdbc:postgresql://<database_host>:<database_port>/<database_name>
+spring.datasource.username=<database_username>
+spring.datasource.password=<database_password>
+```
+
+### Running the application
 Local run:
 ```
 $ mvn spring-boot:run
@@ -27,7 +45,7 @@ $ mvn spring-boot:run
 Using Docker:
 ```
 $ sudo docker build --tag="training:latest" .
-$ sudo docker run -p 8080:8080 -e SPRING_DATASOURCE_URL=<db_url> -it training:latest
+$ sudo docker run -p 8080:8080 -e SPRING_DATASOURCE_URL=jdbc:postgresql://<database_host>:<database_port>/<database_name> -it training:latest
 ```
 As can be seen in _application.properties_, by default the application expects a PosgreSQL server in localhost. That's why it is mandatory to overwrite the datasource property, since the Docker container does not include a PostgreSQL server.
 
@@ -42,7 +60,7 @@ $ mvn test
 - Manual testing:
 To perform a basic manual GET petition, you can execute the following cURL command:
 ```
-curl --location --request GET '{{host}}/api/health'
+$ curl --location --request GET '{{host}}/api/health'
 ```
 Or import into Postman the collection contained in the __Training_Plan_App.postman_collection.json__ file.
 
