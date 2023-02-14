@@ -19,10 +19,21 @@ Navigate to the project directory and build the project using Maven:
 ```
 $ mvn install
 ```
-Run the application:
+### Running the application:
+Local run:
 ```
 $ mvn spring-boot:run
 ```
+Using Docker:
+```
+$ sudo docker build --tag="training:latest" .
+$ sudo docker run -p 8080:8080 -e SPRING_DATASOURCE_URL=<db_url> -it training:latest
+```
+As can be seen in _application.properties_, by default the application expects a PosgreSQL server in localhost. That's why it is mandatory to overwrite the datasource property, since the Docker container does not include a PostgreSQL server.
+
+You can also overwrite other connection properties like user (SPRING_DATASOURCE_USERNAME) and password (SPRING_DATASOURCE_PASSWORD) when running the Docker image.
+
+Make sure your PostgreSQL server is up and running and accepts connections from your Docker container.
 ### Testing
 - Running integration tests:
 ```
