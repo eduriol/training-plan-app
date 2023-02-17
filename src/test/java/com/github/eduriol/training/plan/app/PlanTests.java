@@ -42,7 +42,8 @@ class PlanTests extends AbstractTests {
                         content().contentType(MediaType.APPLICATION_JSON),
                         jsonPath("$.id").isNumber(),
                         jsonPath("$.createdAt").value(matchesPattern(zonedDateTimeRegex)),
-                        jsonPath("$.name").value(plan.getName())
+                        jsonPath("$.name").value(plan.getName()),
+                        jsonPath("$.topics").value(iterableWithSize(0))
                 );
     }
 

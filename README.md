@@ -47,7 +47,7 @@ Using Docker:
 $ sudo docker build --tag="training:latest" .
 $ sudo docker run -p 8080:8080 -e SPRING_DATASOURCE_URL=jdbc:postgresql://<database_host>:<database_port>/<database_name> -it training:latest
 ```
-As can be seen in _application.properties_, by default the application expects a PosgreSQL server in localhost. That's why it is mandatory to overwrite the datasource property, since the Docker container does not include a PostgreSQL server.
+As can be seen in _application.properties_, by default the application expects a PostgreSQL server in localhost. That's why it is mandatory to overwrite the datasource property, since the Docker container does not include a PostgreSQL server.
 
 You can also overwrite other connection properties like user (SPRING_DATASOURCE_USERNAME) and password (SPRING_DATASOURCE_PASSWORD) when running the Docker image.
 
@@ -80,13 +80,13 @@ The API has the following endpoints:
 
 - Topics:
 
-| Method | Endpoint    | Description                                   |
-| ------ |-------------|-----------------------------------------------|
-| GET | /api/topics/{id} | Retrieve a specific learning topic by ID      |
-| GET | /api/topics | Retrieve a list of learning topics            |
-| POST | /api/topics | Create a new learning topic                   |
-| PUT | /api/topics/{id} | Update an existing learning topic             |
-| DELETE | /api/topics/{id} | Delete a learning topic                       |
+| Method | Endpoint                           | Description                                          |
+| ------ |------------------------------------|------------------------------------------------------|
+| GET | /api/plans/{plan_id}/topics/{id}   | Retrieve a specific learning topic by ID from a plan |
+| GET | /api/plans/{plan_id}/topics        | Retrieve a list of learning topics from a plan       |
+| POST | /api/plans/{plan_id}/topics        | Create a new learning topic in a plan                |
+| PUT | /api/plans/{plan_id}/topics/{id}   | Update an existing learning topic from a plan        |
+| DELETE | /api/plans/{plan_id}/topics/{id}   | Delete a learning topic                              |
 
 ## Built With
 - [Springboot](https://spring.io/projects/spring-boot) - The web framework used

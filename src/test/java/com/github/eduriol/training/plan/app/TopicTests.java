@@ -1,6 +1,8 @@
 package com.github.eduriol.training.plan.app;
 
+import com.github.eduriol.training.plan.app.dao.IPlanDao;
 import com.github.eduriol.training.plan.app.dao.ITopicDao;
+import com.github.eduriol.training.plan.app.models.domain.Plan;
 import com.github.eduriol.training.plan.app.models.domain.Topic;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,9 @@ class TopicTests extends AbstractTests {
     @Autowired
     private ITopicDao topicDao;
 
+    @Autowired
+    private IPlanDao planDao;
+
     @Override
     @BeforeAll
     public void setUp() {
@@ -26,12 +31,13 @@ class TopicTests extends AbstractTests {
 
     @BeforeEach
     public void resetDb() {
-        topicDao.deleteAll();
+        planDao.deleteAll();
     }
 
     @Test
     void createTopic() throws Exception {
-        String uri = "/api/topics";
+        Plan testPlan = createTestPlan("Backend developer");
+        String uri = "/api/plans/" + testPlan.getId() + "/topics";
         Topic topic = new Topic();
         topic.setName("Java");
         String body = super.mapToJson(topic);
@@ -49,7 +55,8 @@ class TopicTests extends AbstractTests {
 
     @Test
     void createTopicWithoutName() throws Exception {
-        String uri = "/api/topics";
+        Plan testPlan = createTestPlan("Backend developer");
+        String uri = "/api/plans/" + testPlan.getId() + "/topics";
         Topic topic = new Topic();
         String body = super.mapToJson(topic);
 
@@ -63,10 +70,29 @@ class TopicTests extends AbstractTests {
     }
 
     @Test
-    public void getTopicsList() throws Exception {
-        String uri = "/api/topics";
-        createTestTopic("Java");
-        createTestTopic("Kubernetes");
+    void createTopicForUnknownPlan() throws Exception {
+        String uri = "/api/plans/0/topics";
+        Topic topic = new Topic();
+        String body = super.mapToJson(topic);
+
+        mvc.perform(post(uri)
+                        .contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpectAll(
+                        status().isNotFound(),
+                        content().contentType(MediaType.APPLICATION_JSON),
+                        jsonPath("$.errors").value(iterableWithSize(1))
+                );
+    }
+
+    @Test
+    public void getTopicsListFromMyPlanOnly() throws Exception {
+        Plan testPlan = createTestPlan("Backend developer");
+        String uri = "/api/plans/" + testPlan.getId() + "/topics";
+        createTestTopic("Java", testPlan);
+        createTestTopic("Kubernetes", testPlan);
+
+        Plan secondTestPlan = createTestPlan("Frontend developer");
+        createTestTopic("React", secondTestPlan);
 
         mvc.perform(get(uri))
                 .andExpectAll(
@@ -78,7 +104,8 @@ class TopicTests extends AbstractTests {
 
     @Test
     public void getEmptyTopicsList() throws Exception {
-        String uri = "/api/topics";
+        Plan testPlan = createTestPlan("Backend developer");
+        String uri = "/api/plans/" + testPlan.getId() + "/topics";
         mvc.perform(get(uri))
                 .andExpectAll(
                         status().isOk(),
@@ -89,14 +116,15 @@ class TopicTests extends AbstractTests {
 
     @Test
     public void getTopic() throws Exception {
-        Topic topic = createTestTopic("Java");
-        String uri = "/api/topics/" + topic.getId();
+        Plan testPlan = createTestPlan("Backend developer");
+        Topic testTopic = createTestTopic("Java", testPlan);
+        String uri = "/api/plans/" + testPlan.getId() + "/topics/" + testTopic.getId();
 
         mvc.perform(get(uri))
                 .andExpectAll(
                         status().isOk(),
                         content().contentType(MediaType.APPLICATION_JSON),
-                        jsonPath("$.id").value(topic.getId()),
+                        jsonPath("$.id").value(testTopic.getId()),
                         jsonPath("$.createdAt").value(matchesPattern(zonedDateTimeRegex)),
                         jsonPath("$.name").value("Java")
                 );
@@ -104,7 +132,22 @@ class TopicTests extends AbstractTests {
 
     @Test
     public void getUnknownTopic() throws Exception {
-        String uri = "/api/topics/0";
+        Plan testPlan = createTestPlan("Backend developer");
+        String uri = "/api/plans/" + testPlan.getId() + "/topics/0";
+        mvc.perform(get(uri))
+                .andExpectAll(
+                        status().isNotFound(),
+                        content().contentType(MediaType.APPLICATION_JSON),
+                        jsonPath("$.errors").value(iterableWithSize(1))
+                );
+    }
+
+    @Test
+    public void getTopicFromAnotherPlan() throws Exception {
+        Plan testPlan = createTestPlan("Backend developer");
+        Topic testTopic = createTestTopic("Java", testPlan);
+        Plan secondTestPlan = createTestPlan("Frontend developer");
+        String uri = "/api/plans/" + secondTestPlan.getId() + "/topics/" + testTopic.getId();
         mvc.perform(get(uri))
                 .andExpectAll(
                         status().isNotFound(),
@@ -115,8 +158,9 @@ class TopicTests extends AbstractTests {
 
     @Test
     public void updateTopic() throws Exception {
-        Topic topic = createTestTopic("Java");
-        String uri = "/api/topics/" + topic.getId();
+        Plan testPlan = createTestPlan("Backend developer");
+        Topic testTopic = createTestTopic("Java", testPlan);
+        String uri = "/api/plans/" + testPlan.getId() + "/topics/" + testTopic.getId();
         Topic updatedTopic = new Topic();
         updatedTopic.setName("Kubernetes");
         String body = super.mapToJson(updatedTopic);
@@ -125,15 +169,16 @@ class TopicTests extends AbstractTests {
                 .contentType(MediaType.APPLICATION_JSON).content(body))
                 .andExpectAll(
                         status().isOk(),
-                        jsonPath("$.id").value(topic.getId()),
-                        jsonPath("$.createdAt", new ZonedDateTimeMatcher(topic.getCreatedAt(), 1, ChronoUnit.MILLIS)),
+                        jsonPath("$.id").value(testTopic.getId()),
+                        jsonPath("$.createdAt", new ZonedDateTimeMatcher(testTopic.getCreatedAt(), 1, ChronoUnit.MILLIS)),
                         jsonPath("$.name").value("Kubernetes")
                 );
     }
 
     @Test
     public void updateUnknownTopic() throws Exception {
-        String uri = "/api/topics/0";
+        Plan testPlan = createTestPlan("Backend developer");
+        String uri = "/api/plans/" + testPlan.getId() + "/topics/0";
         Topic updatedTopic = new Topic();
         updatedTopic.setName("Kubernetes");
         String body = super.mapToJson(updatedTopic);
@@ -148,9 +193,29 @@ class TopicTests extends AbstractTests {
     }
 
     @Test
+    public void updateTopicFromAnotherPlan() throws Exception {
+        Plan testPlan = createTestPlan("Backend developer");
+        Topic testTopic = createTestTopic("Java", testPlan);
+        Plan secondTestPlan = createTestPlan("Frontend developer");
+        String uri = "/api/plans/" + secondTestPlan.getId() + "/topics/" + testTopic.getId();
+        Topic updatedTopic = new Topic();
+        updatedTopic.setName("Kubernetes");
+        String body = super.mapToJson(updatedTopic);
+
+        mvc.perform(put(uri)
+                        .contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpectAll(
+                        status().isNotFound(),
+                        content().contentType(MediaType.APPLICATION_JSON),
+                        jsonPath("$.errors").value(iterableWithSize(1))
+                );
+    }
+
+    @Test
     public void updateTopicWithoutName() throws Exception {
-        Topic topic = createTestTopic("Java");
-        String uri = "/api/topics/" + topic.getId();
+        Plan testPlan = createTestPlan("Backend developer");
+        Topic testTopic = createTestTopic("Java", testPlan);
+        String uri = "/api/plans/" + testPlan.getId() + "/topics/" + testTopic.getId();
         Topic updatedTopic = new Topic();
         String body = super.mapToJson(updatedTopic);
 
@@ -165,8 +230,9 @@ class TopicTests extends AbstractTests {
 
     @Test
     public void deleteTopic() throws Exception {
-        Topic topic = createTestTopic("Java");
-        String uri = "/api/topics/" + topic.getId();
+        Plan testPlan = createTestPlan("Backend developer");
+        Topic testTopic = createTestTopic("Java", testPlan);
+        String uri = "/api/plans/" + testPlan.getId() + "/topics/" + testTopic.getId();
 
         mvc.perform(delete(uri)).andExpect(status().isNoContent());
 
@@ -175,7 +241,8 @@ class TopicTests extends AbstractTests {
 
     @Test
     public void deleteUnknownTopic() throws Exception {
-        String uri = "/api/topics/0";
+        Plan testPlan = createTestPlan("Backend developer");
+        String uri = "/api/plans/" + testPlan.getId() + "/topics/0";
 
         mvc.perform(delete(uri))
                 .andExpectAll(
@@ -185,10 +252,32 @@ class TopicTests extends AbstractTests {
                 );
     }
 
-    private Topic createTestTopic(String topicName) {
+    @Test
+    public void deleteTopicFromAnotherPlan() throws Exception {
+        Plan testPlan = createTestPlan("Backend developer");
+        Topic testTopic = createTestTopic("Java", testPlan);
+        Plan secondTestPlan = createTestPlan("Frontend developer");
+        String uri = "/api/plans/" + secondTestPlan.getId() + "/topics/" + testTopic.getId();
+
+        mvc.perform(delete(uri))
+                .andExpectAll(
+                        status().isNotFound(),
+                        content().contentType(MediaType.APPLICATION_JSON),
+                        jsonPath("$.errors").value(iterableWithSize(1))
+                );
+    }
+
+    private Topic createTestTopic(String topicName, Plan plan) {
         Topic topic = new Topic();
         topic.setName(topicName);
+        topic.setPlan(plan);
         return topicDao.save(topic);
+    }
+
+    private Plan createTestPlan(String planName) {
+        Plan plan = new Plan();
+        plan.setName(planName);
+        return planDao.save(plan);
     }
 
 }

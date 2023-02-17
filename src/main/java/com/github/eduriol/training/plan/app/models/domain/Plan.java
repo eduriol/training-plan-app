@@ -5,6 +5,8 @@ import lombok.Data;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name="plans")
@@ -20,11 +22,15 @@ public class Plan {
     @NotEmpty
     private String name;
 
+    @OneToMany(mappedBy = "plan", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Topic> topics;
+
     @Column(name = "created_at", nullable = false)
     private ZonedDateTime createdAt;
 
     @PrePersist
     public void prePersist() {
+        this.topics = new ArrayList<>();
         this.createdAt = ZonedDateTime.now();
     }
 

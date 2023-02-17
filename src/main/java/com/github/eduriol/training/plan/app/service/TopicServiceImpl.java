@@ -1,6 +1,7 @@
 package com.github.eduriol.training.plan.app.service;
 
 import com.github.eduriol.training.plan.app.dao.ITopicDao;
+import com.github.eduriol.training.plan.app.models.domain.Plan;
 import com.github.eduriol.training.plan.app.models.domain.Topic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,18 +30,9 @@ public class TopicServiceImpl implements ITopicService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Topic> findAll() {
-        logger.debug("Getting list of topics");
-        List<Topic> topics = (List<Topic>) topicDao.findAll();
-        logger.debug("Found {} topics", topics.size());
-        return topics;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Topic findById(Long id) {
-        logger.debug("Looking for topic with id = {}", id);
-        Topic topic = topicDao.findById(id).orElse(null);
+    public Topic findByIdAndPlanId(Long id, Long planId) {
+        logger.debug("Looking for topic with id = {} and plan id = {}", id, planId);
+        Topic topic = topicDao.findByIdAndPlanId(id, planId);
         logger.debug("Found topic {}", topic);
         return topic;
     }
@@ -51,5 +43,14 @@ public class TopicServiceImpl implements ITopicService {
         logger.debug("Deleting topic with id = {}", id);
         topicDao.deleteById(id);
         logger.debug("Topic deleted");
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Topic> findByPlan(Plan plan) {
+        logger.debug("Looking for topics for plan with id = {}", plan.getId());
+        List<Topic> topics = topicDao.findAllByPlan(plan);
+        logger.debug("Found {} topics for plan with id = {}", topics.size(), plan.getId());
+        return topics;
     }
 }

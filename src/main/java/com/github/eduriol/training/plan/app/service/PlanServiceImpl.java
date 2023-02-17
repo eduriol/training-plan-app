@@ -25,4 +25,13 @@ public class PlanServiceImpl implements IPlanService {
         return savedPlan;
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Plan findById(Long id) {
+        logger.debug("Looking for plan with id = {}", id);
+        Plan plan = planDao.findById(id).orElse(null);
+        logger.debug("Found plan {}", plan);
+        return plan;
+    }
+
 }
