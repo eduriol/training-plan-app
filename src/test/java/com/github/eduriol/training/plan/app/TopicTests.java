@@ -1,11 +1,8 @@
 package com.github.eduriol.training.plan.app;
 
-import com.github.eduriol.training.plan.app.dao.IPlanDao;
-import com.github.eduriol.training.plan.app.dao.ITopicDao;
 import com.github.eduriol.training.plan.app.models.domain.Plan;
 import com.github.eduriol.training.plan.app.models.domain.Topic;
 import org.junit.jupiter.api.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
 import java.time.temporal.ChronoUnit;
@@ -16,12 +13,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TopicTests extends AbstractTests {
-
-    @Autowired
-    private ITopicDao topicDao;
-
-    @Autowired
-    private IPlanDao planDao;
 
     @Override
     @BeforeAll
@@ -265,19 +256,6 @@ class TopicTests extends AbstractTests {
                         content().contentType(MediaType.APPLICATION_JSON),
                         jsonPath("$.errors").value(iterableWithSize(1))
                 );
-    }
-
-    private Topic createTestTopic(String topicName, Plan plan) {
-        Topic topic = new Topic();
-        topic.setName(topicName);
-        topic.setPlan(plan);
-        return topicDao.save(topic);
-    }
-
-    private Plan createTestPlan(String planName) {
-        Plan plan = new Plan();
-        plan.setName(planName);
-        return planDao.save(plan);
     }
 
 }

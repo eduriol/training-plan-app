@@ -1,6 +1,7 @@
 package com.github.eduriol.training.plan.app.controller;
 
 import com.github.eduriol.training.plan.app.exception.BadRequestException;
+import com.github.eduriol.training.plan.app.exception.NotFoundException;
 import com.github.eduriol.training.plan.app.models.domain.Plan;
 import com.github.eduriol.training.plan.app.service.IPlanService;
 import org.slf4j.Logger;
@@ -40,6 +41,40 @@ public class PlanRestController {
         logger.info("Response: {}", createdPlan);
 
         return createdPlan;
+    }
+
+    @GetMapping("/{id}")
+    public Plan getPlan(@PathVariable Long id) {
+
+        logger.info("Received request to get plan with id = {}", id);
+
+        Plan plan = planService.findById(id);
+
+        if (plan == null) {
+            throw new NotFoundException(List.of("The plan with id = " + id.toString() + " does not exist."));
+        }
+
+        logger.info("Response: {}", plan);
+
+        return plan;
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deletePlan(@PathVariable Long id) {
+
+        logger.info("Received request to delete plan with id = {}", id);
+
+        Plan plan = planService.findById(id);
+
+        if (plan == null) {
+            throw new NotFoundException(List.of("The plan with id = " + id.toString() + " does not exist."));
+        }
+
+        planService.delete(id);
+
+        logger.info("Plan with id = {} successfully deleted", id);
+
     }
 
 }

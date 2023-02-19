@@ -74,9 +74,10 @@ The API has the following endpoints:
 
 - Plans:
 
-| Method | Endpoint   | Description                                    |
-| ------ |------------|------------------------------------------------|
-| POST | /api/plans | Create a new training plan                     |
+| Method | Endpoint   | Description                |
+| ------ |------------|----------------------------|
+| POST | /api/plans | Create a new training plan |
+| DELETE | /api/plans/{plan_id}   | Delete a training plan     |
 
 - Topics:
 

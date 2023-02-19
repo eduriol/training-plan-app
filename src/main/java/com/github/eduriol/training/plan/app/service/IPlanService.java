@@ -7,4 +7,6 @@ public interface IPlanService {
     Plan save(Plan plan);
 
     Plan findById(Long id);
+
+    void delete(Long id);
 }

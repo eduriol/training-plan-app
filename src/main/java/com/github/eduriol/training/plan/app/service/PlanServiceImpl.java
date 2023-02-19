@@ -34,4 +34,12 @@ public class PlanServiceImpl implements IPlanService {
         return plan;
     }
 
+    @Override
+    @Transactional
+    public void delete(Long id) {
+        logger.debug("Deleting plan with id = {}", id);
+        planDao.deleteById(id);
+        logger.debug("Plan deleted");
+    }
+
 }
