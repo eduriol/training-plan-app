@@ -91,4 +91,49 @@ class PlanTests extends AbstractTests {
                 );
     }
 
+    @Test
+    public void getPlanWithoutTopics() throws Exception {
+        Plan testPlan = createTestPlan("Backend developer");
+        String uri = "/api/plans/" + testPlan.getId();
+
+        mvc.perform(get(uri))
+                .andExpectAll(
+                        status().isOk(),
+                        content().contentType(MediaType.APPLICATION_JSON),
+                        jsonPath("$.id").value(testPlan.getId()),
+                        jsonPath("$.createdAt").value(matchesPattern(zonedDateTimeRegex)),
+                        jsonPath("$.name").value("Backend developer"),
+                        jsonPath("$.topics").value(iterableWithSize(0))
+                );
+    }
+
+    @Test
+    public void getPlanWithTopics() throws Exception {
+        Plan testPlan = createTestPlan("Backend developer");
+        createTestTopic("Java", testPlan);
+        createTestTopic("Docker", testPlan);
+        String uri = "/api/plans/" + testPlan.getId();
+
+        mvc.perform(get(uri))
+                .andExpectAll(
+                        status().isOk(),
+                        content().contentType(MediaType.APPLICATION_JSON),
+                        jsonPath("$.id").value(testPlan.getId()),
+                        jsonPath("$.createdAt").value(matchesPattern(zonedDateTimeRegex)),
+                        jsonPath("$.name").value("Backend developer"),
+                        jsonPath("$.topics").value(iterableWithSize(2))
+                );
+    }
+
+    @Test
+    public void getUnknownPlan() throws Exception {
+        String uri = "/api/plans/0";
+        mvc.perform(get(uri))
+                .andExpectAll(
+                        status().isNotFound(),
+                        content().contentType(MediaType.APPLICATION_JSON),
+                        jsonPath("$.errors").value(iterableWithSize(1))
+                );
+    }
+
 }

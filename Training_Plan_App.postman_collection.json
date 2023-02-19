@@ -218,6 +218,26 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Get plan by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/plans/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"plans",
+								"1"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
