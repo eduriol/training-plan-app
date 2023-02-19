@@ -43,6 +43,17 @@ public class PlanRestController {
         return createdPlan;
     }
 
+    @GetMapping
+    public List<Plan> getPlans() {
+        logger.info("Received request to list all plans");
+
+        List<Plan> plans = planService.findAll();
+
+        logger.info("Response: {}", plans);
+
+        return plans;
+    }
+
     @GetMapping("/{id}")
     public Plan getPlan(@PathVariable Long id) {
 

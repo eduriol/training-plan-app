@@ -136,4 +136,30 @@ class PlanTests extends AbstractTests {
                 );
     }
 
+    @Test
+    public void getPlansList() throws Exception {
+        createTestPlan("Backend developer");
+        createTestPlan("Frontend developer");
+        String uri = "/api/plans";
+
+        mvc.perform(get(uri))
+                .andExpectAll(
+                        status().isOk(),
+                        content().contentType(MediaType.APPLICATION_JSON),
+                        jsonPath("$").value(iterableWithSize(2))
+                );
+    }
+
+    @Test
+    public void getEmptyPlansList() throws Exception {
+        String uri = "/api/plans";
+
+        mvc.perform(get(uri))
+                .andExpectAll(
+                        status().isOk(),
+                        content().contentType(MediaType.APPLICATION_JSON),
+                        jsonPath("$").value(iterableWithSize(0))
+                );
+    }
+
 }

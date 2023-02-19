@@ -238,6 +238,25 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "List all plans",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/plans",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"plans"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},

@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 public class PlanServiceImpl implements IPlanService {
 
@@ -40,6 +42,15 @@ public class PlanServiceImpl implements IPlanService {
         logger.debug("Deleting plan with id = {}", id);
         planDao.deleteById(id);
         logger.debug("Plan deleted");
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Plan> findAll() {
+        logger.debug("Looking for all plans");
+        List<Plan> plans = (List<Plan>) planDao.findAll();
+        logger.debug("Found {} plans", plans.size());
+        return plans;
     }
 
 }
