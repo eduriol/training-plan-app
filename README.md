@@ -74,21 +74,23 @@ The API has the following endpoints:
 
 - Plans:
 
-| Method | Endpoint   | Description                                         |
-| ------ |------------|-----------------------------------------------------|
-| GET | /api/plans/{plan_id} | Retrieve a specific training plan by ID |
-| POST | /api/plans | Create a new training plan                          |
-| DELETE | /api/plans/{plan_id}   | Delete a training plan                              |
+| Method | Endpoint             | Description                             |
+|--------|----------------------|-----------------------------------------|
+| GET    | /api/plans/{plan_id} | Retrieve a specific training plan by ID |
+| GET    | /api/plans           | Retrieve a list of training plans       |
+| POST   | /api/plans           | Create a new training plan              |
+| PUT    | /api/plans/{plan_id} | Update an existing training plan        |
+| DELETE | /api/plans/{plan_id} | Delete a training plan                  |
 
 - Topics:
 
-| Method | Endpoint                           | Description                                          |
-| ------ |------------------------------------|------------------------------------------------------|
-| GET | /api/plans/{plan_id}/topics/{id}   | Retrieve a specific learning topic by ID from a plan |
-| GET | /api/plans/{plan_id}/topics        | Retrieve a list of learning topics from a plan       |
-| POST | /api/plans/{plan_id}/topics        | Create a new learning topic in a plan                |
-| PUT | /api/plans/{plan_id}/topics/{id}   | Update an existing learning topic from a plan        |
-| DELETE | /api/plans/{plan_id}/topics/{id}   | Delete a learning topic                              |
+| Method | Endpoint                         | Description                                          |
+|--------|----------------------------------|------------------------------------------------------|
+| GET    | /api/plans/{plan_id}/topics/{id} | Retrieve a specific learning topic by ID from a plan |
+| GET    | /api/plans/{plan_id}/topics      | Retrieve a list of learning topics from a plan       |
+| POST   | /api/plans/{plan_id}/topics      | Create a new learning topic in a plan                |
+| PUT    | /api/plans/{plan_id}/topics/{id} | Update an existing learning topic from a plan        |
+| DELETE | /api/plans/{plan_id}/topics/{id} | Delete a learning topic                              |
 
 ## Built With
 - [Springboot](https://spring.io/projects/spring-boot) - The web framework used

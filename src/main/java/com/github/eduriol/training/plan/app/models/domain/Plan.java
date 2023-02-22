@@ -23,14 +23,13 @@ public class Plan {
     private String name;
 
     @OneToMany(mappedBy = "plan", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Topic> topics;
+    private List<Topic> topics = new ArrayList<>();
 
     @Column(name = "created_at", nullable = false)
     private ZonedDateTime createdAt;
 
     @PrePersist
     public void prePersist() {
-        this.topics = new ArrayList<>();
         this.createdAt = ZonedDateTime.now();
     }
 

@@ -257,6 +257,35 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Update plan by id",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Backend senior developer 101\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/plans/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"plans",
+								"1"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},

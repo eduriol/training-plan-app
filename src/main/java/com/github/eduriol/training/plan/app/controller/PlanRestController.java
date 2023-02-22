@@ -12,6 +12,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -36,6 +37,8 @@ public class PlanRestController {
                     .toList();
             throw new BadRequestException(errors);
         }
+
+        plan.setTopics(new ArrayList<>());
 
         Plan createdPlan = planService.save(plan);
         logger.info("Response: {}", createdPlan);
@@ -68,6 +71,33 @@ public class PlanRestController {
         logger.info("Response: {}", plan);
 
         return plan;
+    }
+
+    @PutMapping("/{id}")
+    public Plan updatePlan(@PathVariable Long id, @Valid @RequestBody Plan newPlan, BindingResult result) {
+
+        logger.info("Received request to update plan with id = {} with plan: {}", id, newPlan);
+
+        Plan plan = planService.findById(id);
+
+        if (plan == null) {
+            throw new NotFoundException(List.of("The plan with id = " + id.toString() + " does not exist."));
+        }
+
+        if (result.hasErrors()) {
+            List<String> errors = result.getFieldErrors()
+                    .stream()
+                    .map(err -> "'" + err.getField() + "' " + err.getDefaultMessage())
+                    .toList();
+            throw new BadRequestException(errors);
+        }
+
+        plan.setName(newPlan.getName());
+        Plan updatedPlan = planService.save(plan);
+        logger.info("Response: {}", updatedPlan);
+
+        return updatedPlan;
+
     }
 
     @DeleteMapping("/{id}")
